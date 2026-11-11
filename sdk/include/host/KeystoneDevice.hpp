@@ -14,6 +14,7 @@
 
 #include <cerrno>
 #include <cstring>
+#include <cstdint>
 #include <iostream>
 
 #include "./common.h"

@@ -36,5 +36,9 @@ add_custom_target("examples")
 
 # add all examples below
 add_subdirectory(hello)
-add_subdirectory(attestation)
+if (DEFINED ENV{FW_BIN} AND NOT "$ENV{FW_BIN}" STREQUAL "")
+  add_subdirectory(attestation)
+else()
+  message(WARNING "FW_BIN is not set; skipping the attestation example")
+endif()
 add_subdirectory(ros)

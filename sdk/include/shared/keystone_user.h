@@ -7,6 +7,9 @@
 
 #include <linux/ioctl.h>
 #include <linux/types.h>
+#ifndef __KERNEL__
+#include <stdint.h>
+#endif
 
 #include "sm_call.h"
 

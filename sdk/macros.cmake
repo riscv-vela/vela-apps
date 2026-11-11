@@ -9,24 +9,35 @@ macro(global_set Name Value)
     set(${Name} "${Value}" CACHE STRING "NoDesc" FORCE)
 endmacro()
 
-#  set(cross_compile riscv${bits}-unknown-linux-gnu-)
+# Toolchain prefix selection:
+#   1. CROSS_COMPILE environment variable (e.g. riscv64-linux-gnu-)
+#   2. riscv<bits>-unknown-linux-gnu-  (riscv-gnu-toolchain build)
+#   3. riscv<bits>-linux-gnu-          (Debian/Ubuntu package)
 macro(use_riscv_toolchain bits)
-  set(cross_compile riscv${bits}-unknown-linux-gnu-)
-  execute_process(
-    COMMAND which ${cross_compile}gcc
-    OUTPUT_VARIABLE CROSSCOMPILE
-    RESULT_VARIABLE ERROR)
-
-  if (NOT "${ERROR}" STREQUAL 0)
-    message(FATAL_ERROR "RISCV Toolchain is not found")
+  if (DEFINED ENV{CROSS_COMPILE} AND NOT "$ENV{CROSS_COMPILE}" STREQUAL "")
+    set(_cross_candidates $ENV{CROSS_COMPILE})
+  else()
+    set(_cross_candidates
+        riscv${bits}-unknown-linux-gnu-
+        riscv${bits}-linux-gnu-)
   endif()
 
-  string(STRIP ${CROSSCOMPILE} CROSSCOMPILE)
-  string(LENGTH ${CROSSCOMPILE} CROSSCOMPILE_LEN)
-  math(EXPR CROSSCOMPILE_LEN "${CROSSCOMPILE_LEN} - 3")
-  string(SUBSTRING ${CROSSCOMPILE} 0 ${CROSSCOMPILE_LEN} CROSSCOMPILE)
+  unset(CROSSCOMPILE)
+  foreach(_prefix ${_cross_candidates})
+    find_program(_cross_gcc_${_prefix} ${_prefix}gcc)
+    if (_cross_gcc_${_prefix})
+	get_filename_component(_cross_dir ${_cross_gcc_${_prefix}} DIRECTORY)
+      	set(CROSSCOMPILE ${_cross_dir}/${_prefix})
+      break()
+    endif()
+  endforeach()
 
-  message(STATUS "Tagret tripplet: ${CROSSCOMPILE}")
+  if (NOT DEFINED CROSSCOMPILE)
+    message(FATAL_ERROR "RISC-V toolchain not found (tried: ${_cross_candidates}). "
+                        "Set CROSS_COMPILE to the toolchain prefix.")
+  endif()
+
+  message(STATUS "Target triplet: ${CROSSCOMPILE}")
 
   set(CC              ${CROSSCOMPILE}gcc)
   set(CXX             ${CROSSCOMPILE}g++)
@@ -35,7 +46,7 @@ macro(use_riscv_toolchain bits)
   set(AR              ${CROSSCOMPILE}ar)
   set(OBJCOPY         ${CROSSCOMPILE}objcopy)
   set(OBJDUMP         ${CROSSCOMPILE}objdump)
-  set(CFLAGS          "-Wall -Werror")
+  set(CFLAGS          "-Wall -Werror -fno-stack-protector")
 
   global_set(CMAKE_C_COMPILER        ${CC}${EXT})
   global_set(CMAKE_ASM_COMPILER      ${CC}${EXT})
@@ -44,7 +55,7 @@ macro(use_riscv_toolchain bits)
   global_set(CMAKE_AR                ${AR}${EXT})
   global_set(CMAKE_OBJCOPY           ${OBJCOPY}${EXT})
   global_set(CMAKE_OBJDUMP           ${OBJDUMP}${EXT})
-  global_set(CMAKE_C_FLAGS           ${CMAKE_C_FLAGS} ${CFLAGS})
+  global_set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${CFLAGS}")
 
   check_compiler(${CMAKE_C_COMPILER})
   check_compiler(${CMAKE_CXX_COMPILER})
@@ -119,7 +130,7 @@ macro(add_eyrie_runtime target_name plugins) # the files are passed via ${ARGN}
   ExternalProject_Add(eyrie-${target_name}
     PREFIX ${runtime_prefix}
     DOWNLOAD_COMMAND rm -rf ${eyrie_src} && cp -ar ${KEYSTONE_EYRIE_RUNTIME} ${eyrie_src}
-    CMAKE_ARGS "${PLUGIN_FLAGS}" -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DEYRIE_SRCDIR=${KEYSTONE_EYRIE_RUNTIME} -DKEYSTONE_SDK_DIR=${KEYSTONE_SDK_DIR}
+    CMAKE_ARGS "${PLUGIN_FLAGS}" "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}" -DEYRIE_SRCDIR=${KEYSTONE_EYRIE_RUNTIME} -DKEYSTONE_SDK_DIR=${KEYSTONE_SDK_DIR}
     BUILD_IN_SOURCE TRUE
     BUILD_BYPRODUCTS ${eyrie_src}/eyrie-rt ${eyrie_src}/.options_log ${eyrie_src}/loader.bin
     INSTALL_COMMAND "")

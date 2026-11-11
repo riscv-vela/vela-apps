@@ -1,5 +1,5 @@
 
-set(SYS_SOURCES entry.S boot.c env.c interrupt.c stack_chk_jadu.c)
+set(SYS_SOURCES entry.S boot.c env.c interrupt.c)
 add_executable(eyrie-build EXCLUDE_FROM_ALL ${SYS_SOURCES})
 
 # The ordering of these libraries is important, make sure that any symbols which may be
