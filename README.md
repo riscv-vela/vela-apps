@@ -90,11 +90,11 @@ enclave application, the Eyrie runtime, the loader, and the host runner:
 
 ### Running
 
-Copy a package into the Q-Vela guest, load the Keystone driver from
-[vela-linux](https://github.com/riscv-vela/vela-linux), and run it:
+Copy a package into the Q-Vela guest and run it. The Keystone driver from
+[vela-linux](https://github.com/riscv-vela/vela-linux) is built into the kernel,
+so `/dev/keystone_enclave` already exists:
 
 ```bash
-insmod keystone-driver.ko      # creates /dev/keystone_enclave
 ./hello.vela
 ```
 
