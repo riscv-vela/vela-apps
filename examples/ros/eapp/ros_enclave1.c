@@ -71,14 +71,14 @@ void EAPP_ENTRY eapp_entry()
 
   // printf("[PUBLISHER] Writing to shared mem for subsriber \n");
   shm_t shm_sub = ocall_loan_shm(1);
-//  ocall_print_value((uintptr_t)shm_sub.rid);
-//  ocall_print_value((uintptr_t)shm_sub.pa);
-//  ocall_print_value((uintptr_t)shm_sub.size);
+  ocall_print_value((uintptr_t)shm_sub.rid);
+  ocall_print_value((uintptr_t)shm_sub.pa);
+  ocall_print_value((uintptr_t)shm_sub.size);
   void *sub = map_shm(shm_sub.rid);
-//  ocall_print_value((uintptr_t)sub);
-//  unsigned char *p = (unsigned char *)sub;
-//  for (int i = 0; i < 64; ++i)
-//    p[i] = 2;
+  ocall_print_value((uintptr_t)sub);
+  unsigned char *p = (unsigned char *)sub;
+  for (int i = 0; i < 64; ++i)
+    p[i] = 2;
 
 //  unmap_shm(shm_mydev.rid, dma, shm_mydev.size);
   unmap_shm(shm_sub.rid, sub, shm_sub.size);
