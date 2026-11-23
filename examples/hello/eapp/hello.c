@@ -2,7 +2,7 @@
 
 int main()
 {
-  //printf("[ENCLAVE] Hello, World!\n");
+  printf("[ENCLAVE] Hello, World!\n");
 
   return 0;
 }
