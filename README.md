@@ -30,6 +30,25 @@ vela-apps/
 
 ---
 
+## License
+
+vela-apps is a composite work. Original code authored for this project is
+licensed under **BSD-2-Clause-Patent** (see `LICENSE`). Vendored upstream
+components keep their own licenses in place:
+
+| Path | Origin | License |
+| ---- | ------ | ------- |
+| `sdk/` | Keystone SDK | BSD-3-Clause |
+| `runtime/` | Keystone Eyrie runtime | BSD-3-Clause (bundled Linux headers in `runtime/tmplib/`: GPL-2.0) |
+| `examples/` | Keystone examples + riscv-vela (`ros`) | BSD-3-Clause for Keystone-derived files, BSD-2-Clause-Patent otherwise |
+| `ras/` | riscv-vela (Chungbuk National University) | Apache-2.0 (rasdaemon decoder: GPL-2.0-or-later) |
+| `reri register generator/` | riscv-vela | BSD-2-Clause-Patent |
+
+See `NOTICE` for the full component notices. Per-file
+`SPDX-License-Identifier` tags, where present, take precedence.
+
+---
+
 ## TEE — Building the Keystone Applications
 
 ### Prerequisites

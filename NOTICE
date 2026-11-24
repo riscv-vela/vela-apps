@@ -1,0 +1,133 @@
+vela-apps — Third-Party Component Notices
+=========================================
+
+vela-apps is a composite work. It combines original code written for the
+riscv-vela project with code derived from the Keystone enclave project,
+including the smaller third-party libraries that Keystone bundles.
+
+Scope of the top-level LICENSE
+------------------------------
+The top-level LICENSE file (BSD-2-Clause-Patent) applies to original work
+authored for this repository, namely:
+
+  * Files in examples/ that do not carry another copyright notice
+    (see section 3).
+  * reri register generator/
+  * Build scripts, documentation and configuration at the repository root.
+
+Where a component directory carries its own license file, that file governs
+the contents of that directory and takes precedence over the top-level
+LICENSE. Per-file SPDX-License-Identifier tags and license notices, where
+present, are authoritative and take precedence over both.
+
+
+1. sdk/
+--------------------------------------------------------------------------
+Component     : Keystone SDK (host, edge, verifier and eapp libraries)
+Upstream      : https://github.com/keystone-enclave/keystone
+                (formerly keystone-enclave/keystone-sdk)
+Form          : Vendored source tree, modified by the riscv-vela project
+License       : BSD-3-Clause
+License text  : sdk/LICENSE
+
+Notes         : Modifications made by the riscv-vela project to files in
+                this tree are contributed under BSD-3-Clause, so that the
+                tree remains uniformly licensed with upstream. Original
+                copyright notices in modified files have been retained.
+                sdk/install/ holds installed copies of the sdk/include
+                headers and carries the same licenses as their sources.
+
+Bundled third-party code (license per file, overriding sdk/LICENSE):
+
+  Path                                   Origin                     License
+  include/host/elf*.h                    University of New South    BSD-3-Clause
+                                         Wales
+  src/verifier/json11.cpp,               json11, Dropbox, Inc.      MIT
+  include/verifier/json11.h
+  src/verifier/ed25519/,                 ed25519, Orson Peters      Zlib
+  include/verifier/ed25519/              (orlp/ed25519)
+  src/common/sha3.c,                     tiny_sha3, Markku-Juhani   MIT
+  include/common/sha3.h                  O. Saarinen
+  include/app/sealing.h                  Fraunhofer AISEC           BSD-3-Clause
+                                                                    (sdk/LICENSE)
+
+                The ed25519 and sha3 files carry no license notice of their
+                own; the licenses listed are those of their upstream
+                projects.
+
+
+2. runtime/
+--------------------------------------------------------------------------
+Component     : Eyrie, the in-enclave S-mode runtime
+Upstream      : https://github.com/keystone-enclave/keystone
+                (formerly keystone-enclave/keystone-runtime)
+Form          : Vendored source tree, modified by the riscv-vela project
+License       : BSD-3-Clause
+License text  : runtime/LICENSE
+
+Notes         : Modifications made by the riscv-vela project to files in
+                this tree are contributed under BSD-3-Clause. Original
+                copyright notices in modified files have been retained.
+
+Bundled third-party code (license per file, overriding runtime/LICENSE):
+
+  Path                                   Origin                     License
+  loader/elf*.c,                         University of New South    BSD-3-Clause
+  include/loader/elf*.h                  Wales
+  util/printf.c,                         Marco Paland               MIT
+  include/util/printf.h
+  crypto/aes.c, crypto/sha256.c,         crypto-algorithms,         Public domain
+  include/crypto/aes.h,                  Brad Conte
+  include/crypto/sha256.h
+  tmplib/asm/*.h, tmplib/linux/          Linux kernel               GPL-2.0
+  linkage.h, tmplib/uaccess.S,           (arch/riscv)
+  tmplib/partial_linkage.h,
+  tmplib/uaccess.h
+  tmplib/linux/const.h                   Linux kernel (uapi)        GPL-2.0 WITH
+                                                                    Linux-syscall-note
+  test/cmocka/                           cmocka                     Apache-2.0
+                                                                    (test/cmocka/COPYING)
+
+                tmplib/uaccess.S is compiled into the runtime binary
+                (eyrie-rt), so a distributed eyrie-rt contains GPL-2.0 code.
+                tmplib/README lists which files were taken from Linux.
+                cmocka is used only by the unit tests under runtime/test/
+                and is not part of the runtime binary.
+
+
+3. examples/
+--------------------------------------------------------------------------
+Component     : Example enclave applications (hello, attestation, ros)
+Form          : hello and attestation are derived from the Keystone
+                examples; ros was written for the riscv-vela project and
+                reuses the Keystone edge-call wrappers
+License       : Files that carry the notice "Copyright (c) 2018, The Regents
+                of the University of California (Regents)" are BSD-3-Clause,
+                with the license text in sdk/LICENSE. All other files are
+                covered by the top-level LICENSE.
+
+
+4. ras/
+--------------------------------------------------------------------------
+Component     : RAS tooling: fault-monitor, RERI error injection, rasdaemon
+                packaging and decoder
+Author        : Chungbuk National University, Computer Systems Lab
+License       : Apache-2.0, except as listed below
+License text  : ras/LICENSE
+
+Notes         : The rasdaemon decoder (ras/rasdaemon/riscv-decoder/
+                non-standard-riscv.c, non-standard-riscv.h) is built into
+                rasdaemon and is GPL-2.0-or-later.
+                ras/rasdaemon/systemd/10-vela.conf is GPL-2.0. These files
+                carry their own SPDX tags, which take precedence over
+                ras/LICENSE. The patch 0001-build-add-riscv-ns-decoder.patch
+                carries no tag; it modifies rasdaemon's build and falls
+                under rasdaemon's GPL-2.0. rasdaemon itself is not contained
+                in this repository; install-rasdaemon.sh clones and builds
+                it.
+
+
+Reporting
+--------------------------------------------------------------------------
+If you believe a component is listed incorrectly, or a notice is missing,
+please open an issue at https://github.com/riscv-vela/vela-apps/issues
